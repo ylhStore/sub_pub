@@ -8,33 +8,31 @@
 #include "inner_sub_base.h"
 #include "inner_master.h"
 
-namespace mission
+namespace inner
 {
 //------------------------------------------------------定义 RAII 的订阅器-------------------
-class InnerCallBackHelper
-{
-};
+class CallBackHelper
+{};
 
-class CallMaster;
+class Master;
 
 // 封装 自己的消息订阅器 
 template<class M,class T>
-class InnerCallBack : public InnerCallBackHelper
+class CallBack : public CallBackHelper
 {
     private:
     using ClassFuncType = void(T::*)(const M&);
 
-
     public:
-    InnerCallBack(const std::string& id,void(T::*fp)(const M&), T* obj):
+    CallBack(const std::string& id,void(T::*fp)(const M&), T* obj):
         _id(id)
     {
-        _regist_iter = CallMaster::instance()->regist(id,fp,obj);
+        _regist_iter = Master::instance()->regist(id,fp,obj);
         _func = fp;
     }
-    ~InnerCallBack()
+    ~CallBack()
     {
-        CallMaster::instance()->cancellation(_id,_regist_iter);
+        Master::instance()->cancellation(_id,_regist_iter);
     }
     private:
     const std::string _id;
@@ -42,42 +40,42 @@ class InnerCallBack : public InnerCallBackHelper
     SubBaseMulMapIterator _regist_iter;
 };
 
-class InnerSubOptions
+class SubOptions
 {
     public:
     template<class M,class T>
     void init(const std::string& id,void(T::*fp)(const M&), T* obj)
     {
         _sub_ptr.reset(
-            new InnerCallBack<M, T>(id,fp,obj)
+            new CallBack<M, T>(id,fp,obj)
         );
     }
-    InnerSubOptions(){
+    SubOptions(){
     }
-    ~InnerSubOptions(){
+    ~SubOptions(){
     }
     private:
-    std::shared_ptr<InnerCallBackHelper> _sub_ptr;
+    std::shared_ptr<CallBackHelper> _sub_ptr;
 };
 
-typedef std::shared_ptr<InnerSubOptions> InnerSubOptionsPtr;
+typedef std::shared_ptr<SubOptions> SubOptionsPtr;
 
-class InnerSubscriber
+class Subscriber
 {
     public:
-    InnerSubscriber(){
+    Subscriber(){
     }
-    ~InnerSubscriber(){
+    ~Subscriber(){
     }
 
-    InnerSubscriber(const InnerSubOptionsPtr& ops)
+    Subscriber(const SubOptionsPtr& ops)
     {
         _ops = ops;
     }
     private:
-    InnerSubOptionsPtr _ops;
+    SubOptionsPtr _ops;
 };
 
-} // mission
+} // inner
 
 #endif // _INNER_SUB_H_
