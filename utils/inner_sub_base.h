@@ -6,41 +6,41 @@
 #include <memory>
 #include <unordered_map>
 
-namespace mission
+namespace inner
 {
     //---------------------------------------------------定义 订阅器
 
-    struct InnerSubCallParams
+    struct SubCallParams
     {
         const void *_value;
     };
 
-    class InnerSubBase
+    class SubBase
     {
     public:
-        virtual void call(InnerSubCallParams &param) = 0;
+        virtual void call(SubCallParams &param) = 0;
     };
 
     template <class M, class T>
-    class InnerSub : public InnerSubBase
+    class Sub : public SubBase
     {
     public:
-        InnerSub(void (T::*fp)(const M &) , T *obj)
+        Sub(void (T::*fp)(const M &) , T *obj)
         {
             _func = std::bind(fp, obj, std::placeholders::_1);
         }
 
-        void call(InnerSubCallParams &param) override
+        void call(SubCallParams &param) override
         {
             _func(*((M *)param._value));
         }
 
     private:
-        InnerSub();
+        Sub();
         std::function<void(const M &)> _func;
     };
 
-    typedef std::unordered_multimap<std::string, std::shared_ptr<InnerSubBase>> SubBaseMulMap;
+    typedef std::unordered_multimap<std::string, std::shared_ptr<SubBase>> SubBaseMulMap;
     typedef SubBaseMulMap::iterator SubBaseMulMapIterator;
 
 }

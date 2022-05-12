@@ -6,12 +6,12 @@
 
 #include "inner_master.h"
 
-namespace mission
+namespace inner
 {
 
-class CallMaster;
+class Master;
 
-class InnerPubOptions
+class PubOptions
 {
     public:
     void init(const std::string& id)
@@ -21,20 +21,20 @@ class InnerPubOptions
     template<class M>
     void publish(const M& msg)
     {
-        CallMaster::instance()->publish(_id,msg);
+        Master::instance()->publish(_id,msg);
     }
     private:
     std::string _id;
 };
 
-typedef std::shared_ptr<InnerPubOptions> InnerPubOptionsPtr;
+typedef std::shared_ptr<PubOptions> PubOptionsPtr;
 
-class InnerPublisher
+class Publisher
 {
     public:
-    InnerPublisher(){}
-    ~InnerPublisher(){}
-    InnerPublisher(const InnerPubOptionsPtr& ops)
+    Publisher(){}
+    ~Publisher(){}
+    Publisher(const PubOptionsPtr& ops)
     {
         _ops = ops;
     }
@@ -44,8 +44,8 @@ class InnerPublisher
         _ops->publish(msg);
     }
     private:
-    InnerPubOptionsPtr _ops;
+    PubOptionsPtr _ops;
 };
 
-} // mission
+} // inner
 #endif // _INNER_PUB_H_

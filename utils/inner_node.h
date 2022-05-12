@@ -17,41 +17,41 @@
 #include "inner_sub.h"
 #include "inner_pub.h"
 
-namespace mission
+namespace inner
 {
 
-class InnerNode
+class Node
 {
     public:
-    static InnerSubscriber subscribe(InnerSubOptionsPtr& ops)
+    static Subscriber subscribe(SubOptionsPtr& ops)
     {
-        return InnerSubscriber(ops);
+        return Subscriber(ops);
     }
 
     template<class M, class T>
-    static InnerSubscriber subscribe(const std::string& topic,void(T::*fp)(const M&), T* obj)
+    static Subscriber subscribe(const std::string& topic,void(T::*fp)(const M&), T* obj)
     {
-        InnerSubOptionsPtr ops(new InnerSubOptions());
+        SubOptionsPtr ops(new SubOptions());
         ops->init(topic,fp,obj);
 
         return subscribe(ops);
     }
 
-    static InnerPublisher advertise(InnerPubOptionsPtr& ops)
+    static Publisher advertise(PubOptionsPtr& ops)
     {
-        return InnerPublisher(ops);
+        return Publisher(ops);
     }
 
     template<class M>
-    static InnerPublisher advertise(const std::string& topic)
+    static Publisher advertise(const std::string& topic)
     {
-        InnerPubOptionsPtr ops(new InnerPubOptions());
+        PubOptionsPtr ops(new PubOptions());
         ops->init(topic);
         
         return advertise(ops);
     }
 };
 
-} // mission
+} // inner
 
 #endif // _INNER_NODE_H_
